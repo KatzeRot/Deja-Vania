@@ -8,7 +8,7 @@ public class Player : MonoBehaviour {
     Animator playerAnimator;
     SpriteRenderer playerSprite;
 
-    enum StatusPlayer { Stop, RunningR, RunningL, Jumping, Enjuring }
+    enum StatusPlayer { Stop, RunningR, RunningL, Jumping, Enjuring, Spelling }
     StatusPlayer status = StatusPlayer.Stop;
 
     [SerializeField] float radioOverlap = 0.1f;
@@ -30,6 +30,7 @@ public class Player : MonoBehaviour {
     [Header("References")]
     [SerializeField] Text txtPuntuation;
     [SerializeField] Transform posFoot;
+    [SerializeField] GameObject areaAttack;
 
     // Use this for initialization
     void Start() {
@@ -40,10 +41,14 @@ public class Player : MonoBehaviour {
         playerSprite = GetComponent<SpriteRenderer>();
         txtPuntuation.text = "Score: " + puntuation;
         Vector2 position = GameController.GetPosition();
+        
         this.transform.position = position;
+        //areaAttack.SetActive(false);
     }
     private void Update() {
-        print("TOCA EL PUTO SUELO?: " + IsInGround());
+        //print("TOCA EL PUTO SUELO?: " + IsInGround());
+        print(magic);
+        //areaAttack.transform.position = new Vector2(transform.position.x - 0.69f, transform.position.y);
         if(status == StatusPlayer.Stop || status == StatusPlayer.RunningL || status == StatusPlayer.RunningR){
             if (Input.GetKeyDown(KeyCode.Space)) {
             magic -= 0.2f;
@@ -60,13 +65,16 @@ public class Player : MonoBehaviour {
 
         statusPlayer.text = "StatusPlayer: " + status.ToString(); // Unica función de mostrar en pantalla el estado del player        
             
-        magic += 0.002f;
-        barraMagic.fillAmount = magic;
+        StartCoroutine("CalculateEnergyContainer");
 
-        flipSprite();
+        Attack();
+        SpellMagic();
+        DrawingSword();
+        FlipSprite();
+        Jumping();
         Die();
     }
-    // Update is called once per frame
+   
     void FixedUpdate () {
         MovePlayer();
 	}
@@ -95,20 +103,83 @@ public class Player : MonoBehaviour {
         puntuation += valuePuntuation;
         txtPuntuation.text = "Score: " + puntuation;
     }
-    private void flipSprite() {
+    private void Jumping() {
         if (Input.GetKeyDown(KeyCode.W)) {
             status = StatusPlayer.Jumping;
             playerAnimator.SetBool("Jumping", true);
+            //playerAnimator.SetBool("Running", false);
             print("W PULSADA");
             //status = StatusPlayer.Stop;
-        } else if (Input.GetKey(KeyCode.D)) {
+        }else if(!Input.GetKey(KeyCode.W) && !IsInGround()){
+            rb2D.velocity = new Vector2(transform.position.x * speed, (jumpForce/2.1f) *-1);
+            //rb2D.AddRelativeForce(new Vector2(transform.position.x * speed, (jumpForce/2.5f) *-1));
+        }
+    } 
+    private void FlipSprite() {    
+        if (Input.GetKey(KeyCode.D)) {
             status = StatusPlayer.RunningR;
+            areaAttack.transform.position = new Vector2(transform.position.x + 0.69f, transform.position.y);
             playerSprite.flipX = false;
-        }else if (Input.GetKey(KeyCode.A)) {
+        }
+        if (Input.GetKey(KeyCode.A)) {
             status = StatusPlayer.RunningL;
+            areaAttack.transform.position = new Vector2(transform.position.x - 0.69f, transform.position.y);
             playerSprite.flipX = true;
         }
         
+    }
+    private void Attack() {
+        if(IsInGround()){
+          if (Input.GetKey(KeyCode.J)) {
+                //rb2D.velocity = new Vector2(transform.position.x, transform.position.y);
+                areaAttack.GetComponent<CircleCollider2D>().enabled = true;
+                playerAnimator.SetBool("AttackGr1", true);
+            }else{
+                areaAttack.GetComponent<CircleCollider2D>().enabled = false;
+                playerAnimator.SetBool("AttackGr1", false);
+            }  
+        }else{
+            //ATAQUE EN EL AIRE
+        }   
+    }
+    private void SpellMagic(){
+        if (Input.GetKey(KeyCode.K)) {
+            status = StatusPlayer.Spelling;
+            playerAnimator.SetBool("Spelling", true);
+            if (this.playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("PlayerSpell")) {
+                playerAnimator.SetBool("Spelling", false);
+                playerAnimator.SetBool("ShootingSpell", true);
+            }
+        } else if (!Input.GetKey(KeyCode.K)) {
+            playerAnimator.SetBool("ShootingSpell", false);
+            playerAnimator.SetBool("Spelling", false);
+        }
+    }
+    private void DrawingSword(){
+        if (Input.GetKeyUp(KeyCode.I)) {
+            if (playerAnimator.GetBool("IdleSword") == false) {
+                playerAnimator.SetBool("DrawingSword", true);
+                playerAnimator.SetBool("IdleSword", true);
+            } else {
+                playerAnimator.SetBool("IdleSword", false);
+                playerAnimator.SetBool("DrawingSword", false);
+            }
+        }
+    }
+    private IEnumerator CalculateEnergyContainer(){
+        print(magic);
+        // if(magic < 1f && magic >= -0.2f){
+        //     magic += 0.002f;
+        // }else{
+        //     print("Paso por el menor que 0");
+        //     magic = 0f;
+        // }
+        for (float magic = 1f; magic <= 0; magic += 0.1f) {
+            barraMagic.fillAmount = magic;
+            yield return null;
+        }
+        
+  
     }
     private void OnCollisionEnter2D(Collision2D collision) {
         print("Tocaste " + collision.gameObject.name);
