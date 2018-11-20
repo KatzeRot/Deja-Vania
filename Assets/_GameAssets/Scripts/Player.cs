@@ -104,7 +104,7 @@ public class Player : MonoBehaviour {
         txtPuntuation.text = "Score: " + puntuation;
     }
     private void Jumping() {
-        if (Input.GetKeyDown(KeyCode.W)) {
+        if (Input.GetKeyDown(KeyCode.W) && !Input.GetKeyDown(KeyCode.J)) {
             status = StatusPlayer.Jumping;
             playerAnimator.SetBool("Jumping", true);
             //playerAnimator.SetBool("Running", false);
