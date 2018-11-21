@@ -3,71 +3,90 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Skeleton : MonoBehaviour {
+public class HellHound : MonoBehaviour {
     [SerializeField] GameObject player;
     private SpriteRenderer sR;
     private float detectDistance = 9f;
     float dist;
     [SerializeField] float speed;
     [SerializeField] float attackDistance;
-    private Animator skeletonAnimator;
+    private Animator hellHoundAnimator;
     private float actualSpeed;
     bool status = true; //Determina si el personaje esta vivo
-    int damage = 1;
+
+    private int damage = 1; //Daño que provoca
+    private const int TOTALHEALTH = 1; //Vida TOTAL que tiene
+    private int health = TOTALHEALTH; //Vida actual que tiene
+
 
     // Use this for initialization
     void Start () {
         sR = GetComponent<SpriteRenderer>();
-        skeletonAnimator = GetComponent<Animator>();
-        speed = 3.5f;
+        hellHoundAnimator = GetComponent<Animator>();
+        //speed = 3.5f;
         float actualSpeed = speed;
         //detectDistance.
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if(status == true) {
+        if(IsAlive() == true) {
             dist = Vector2.Distance(player.transform.position, transform.position);
             if (dist < detectDistance) {
-                skeletonAnimator.SetBool("Walking", true);
+                hellHoundAnimator.SetBool("Walking", true);
                 if (transform.position.x < player.transform.position.x) {
-                    sR.flipX = false;
+                    sR.flipX = true;
                     transform.Translate(new Vector3(actualSpeed * Time.deltaTime, 0, 0));
                     Attack();
                 } else {
-                    sR.flipX = true;
+                    sR.flipX = false;
                     transform.Translate(new Vector3(-actualSpeed * Time.deltaTime, 0, 0));
                     Attack();
                 }
             } else {
-                skeletonAnimator.SetBool("Walking", false);
+                hellHoundAnimator.SetBool("Walking", false);
             }
         }
         
 	}
     void Attack() {
-        if(dist <= attackDistance) {
+        if (dist <= attackDistance) {
             print("Distancia de Ataque");
             actualSpeed = 0;
-            skeletonAnimator.SetBool("Attacking", true);
+            //hellHoundAnimator.SetBool("Attacking", true);
             //ataque
         } else {
-            skeletonAnimator.SetBool("Attacking", false);
+            //hellHoundAnimator.SetBool("Attacking", false);
             actualSpeed = speed;
         }
     }
     private void OnCollisionEnter2D(Collision2D collision) {
-        if(collision.gameObject.tag == "P_AreaAttack") {
-            print("Se ha muerto");
-            Die();
+        if (collision.gameObject.tag == "Player") {
+            print(this.gameObject.name + " toco al PLAYER");
+            player.GetComponent<Player>().TakeDamage(damage);
+            
+            if (transform.position.x < player.transform.position.x) {
+                player.GetComponent<Rigidbody2D>().AddForceAtPosition(Vector2.right * 2, player.transform.position);
+            } else {
+                player.GetComponent<Rigidbody2D>().AddForceAtPosition(Vector2.left * 2, player.transform.position);
+            }
         }
+
     }
     private void Die() {
         status = false;
-        skeletonAnimator.SetBool("Dying", true);
+        Destroy(this.gameObject);
     }
-
     private bool IsAlive() {
-        throw new NotImplementedException();
+        bool status = true;
+        if(health < TOTALHEALTH) {
+            Die();
+        }
+        return status;
+    }
+    
+
+    public void TakeDamage() {
+        health--;
     }
 }

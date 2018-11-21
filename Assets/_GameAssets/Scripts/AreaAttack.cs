@@ -19,6 +19,9 @@ public class AreaAttack : MonoBehaviour {
 	}
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		print("espada ENTER!");
+		if(other.gameObject.tag == "HellHound") {
+            other.GetComponent<HellHound>().TakeDamage();
+        }
+
 	}
 }

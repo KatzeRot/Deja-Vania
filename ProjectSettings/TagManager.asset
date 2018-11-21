@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - Enemy
   - P_AreaAttack
+  - HellHound
+  - PlatformMovil
   layers:
   - Default
   - TransparentFX

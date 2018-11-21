@@ -42,7 +42,7 @@ public class Player : MonoBehaviour {
         txtPuntuation.text = "Score: " + puntuation;
         Vector2 position = GameController.GetPosition();
         
-        this.transform.position = position;
+        //this.transform.position = position;
         //areaAttack.SetActive(false);
     }
     private void Update() {
@@ -50,9 +50,9 @@ public class Player : MonoBehaviour {
         print(magic);
         //areaAttack.transform.position = new Vector2(transform.position.x - 0.69f, transform.position.y);
         if(status == StatusPlayer.Stop || status == StatusPlayer.RunningL || status == StatusPlayer.RunningR){
-            if (Input.GetKeyDown(KeyCode.Space)) {
-            magic -= 0.2f;
-            print("Space PULSADO");
+            if (Input.GetKeyDown(KeyCode.J)) {
+                magic -= 0.2f;
+                print("Space PULSADO");
             }
         }
         if(IsInGround()){
@@ -130,7 +130,7 @@ public class Player : MonoBehaviour {
     }
     private void Attack() {
         if(IsInGround()){
-          if (Input.GetKey(KeyCode.J)) {
+          if (Input.GetKey(KeyCode.J) && playerAnimator.GetBool("IdleSword") == true && playerAnimator.GetBool("jumping") == false) {
                 //rb2D.velocity = new Vector2(transform.position.x, transform.position.y);
                 areaAttack.GetComponent<CircleCollider2D>().enabled = true;
                 playerAnimator.SetBool("AttackGr1", true);
