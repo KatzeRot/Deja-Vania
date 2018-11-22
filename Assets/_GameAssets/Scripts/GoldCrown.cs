@@ -10,13 +10,11 @@ public class GoldCrown : MonoBehaviour {
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
 		if(collision.gameObject.tag == "Player"){
-			print("Tocado");
-			finalText.gameObject.SetActive(true);
-			finalButton.gameObject.SetActive(true);
-			Destroy(this.gameObject);
+            SceneManager.LoadScene(2);
+			//print("Tocado");
+			//finalText.gameObject.SetActive(true);
+			//finalButton.gameObject.SetActive(true);
+			//Destroy(this.gameObject);
 		}
-	}
-	public void NextLevel(){
-		SceneManager.LoadScene(2);
 	}
 }

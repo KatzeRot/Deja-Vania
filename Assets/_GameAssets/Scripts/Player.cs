@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
@@ -217,6 +218,9 @@ public class Player : MonoBehaviour {
                 Destroy(collision.gameObject);
             }
         }
+        if (collision.gameObject.name == "DeathZone") {
+            SceneManager.LoadScene(3);
+        }
     }
     public void TakeDamage(int damage) {
         status = StatusPlayer.Enjuring;
@@ -233,6 +237,7 @@ public class Player : MonoBehaviour {
             playerAnimator.SetBool("Dying", true);
             if (this.playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("PlayerDie")) {
                 playerAnimator.SetBool("Dying", false);
+                SceneManager.LoadScene(3);
             }
             print("MUERTO!!!");
         }

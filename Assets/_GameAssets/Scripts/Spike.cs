@@ -10,7 +10,7 @@ public class Spike : MonoBehaviour {
             print(collision.gameObject.name + " PINCHADO HASTA MORIR");
             collision.gameObject.GetComponent<Player>().TakeDamage(damage);
             //collision.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 650);
-            collision.transform.Translate(0, 250 * Time.deltaTime, 0);
+            collision.transform.Translate(0, 200 * Time.deltaTime, 0);
         }
     }
 }

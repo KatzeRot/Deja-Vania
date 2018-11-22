@@ -19,8 +19,12 @@ public class AreaAttack : MonoBehaviour {
 	}
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if(other.gameObject.tag == "HellHound") {
+        if (other.gameObject.tag == "HellHound") {
             other.GetComponent<HellHound>().TakeDamage();
-		}
+        } else if (other.gameObject.tag == "Proyectil") {
+            Destroy(other.gameObject);
+        } else if (other.gameObject.tag == "Enemy") {
+            other.GetComponent<Blob>().TakeDamage();
+        }
 	}
 }

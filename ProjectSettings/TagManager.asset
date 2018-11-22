@@ -9,6 +9,8 @@ TagManager:
   - P_AreaAttack
   - HellHound
   - PlatformMovil
+  - Proyectil
+  - DeathZone
   layers:
   - Default
   - TransparentFX
