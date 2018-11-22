@@ -14,9 +14,12 @@ public class HellHound : MonoBehaviour {
     private float actualSpeed;
     bool status = true; //Determina si el personaje esta vivo
 
+    [SerializeField] ParticleSystem deathEffect;
+
     private int damage = 1; //Daño que provoca
     private const int TOTALHEALTH = 1; //Vida TOTAL que tiene
     private int health = TOTALHEALTH; //Vida actual que tiene
+    [SerializeField] Camera mainCamera;
 
 
     // Use this for initialization
@@ -26,6 +29,7 @@ public class HellHound : MonoBehaviour {
         //speed = 3.5f;
         float actualSpeed = speed;
         //detectDistance.
+        
     }
 	
 	// Update is called once per frame
@@ -75,6 +79,7 @@ public class HellHound : MonoBehaviour {
     }
     private void Die() {
         status = false;
+        Instantiate(deathEffect, transform.position, Quaternion.identity);
         Destroy(this.gameObject);
     }
     private bool IsAlive() {
@@ -87,6 +92,8 @@ public class HellHound : MonoBehaviour {
     
 
     public void TakeDamage() {
+        player.GetComponent<Player>().SwordHitSound();
         health--;
+        
     }
 }

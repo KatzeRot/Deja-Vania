@@ -32,6 +32,14 @@ public class Player : MonoBehaviour {
     [SerializeField] Transform posFoot;
     [SerializeField] GameObject areaAttack;
 
+    [Header("Sounds")]
+    [SerializeField] AudioSource swordAttackVoid;
+    [SerializeField] AudioSource swordAttackHit;
+    [SerializeField] AudioSource swordDraw;
+    [SerializeField] AudioSource swordSheat;
+    [SerializeField] AudioSource coin10;
+    [SerializeField] AudioSource pain;
+
     // Use this for initialization
     void Start() {
         //health = totalHealth;
@@ -40,8 +48,7 @@ public class Player : MonoBehaviour {
         playerAnimator = GetComponent<Animator>();
         playerSprite = GetComponent<SpriteRenderer>();
         txtPuntuation.text = "Score: " + puntuation;
-        Vector2 position = GameController.GetPosition();
-        
+        Vector2 position = GameController.GetPosition();        
         //this.transform.position = position;
         //areaAttack.SetActive(false);
     }
@@ -63,6 +70,10 @@ public class Player : MonoBehaviour {
             playerAnimator.SetBool("Jumping", false);
         }
 
+        if(Input.GetKey(KeyCode.W)){
+            transform.parent = null;
+        }
+
         statusPlayer.text = "StatusPlayer: " + status.ToString(); // Unica función de mostrar en pantalla el estado del player        
             
         StartCoroutine("CalculateEnergyContainer");
@@ -76,7 +87,10 @@ public class Player : MonoBehaviour {
     }
    
     void FixedUpdate () {
-        MovePlayer();
+        if(Die() == false){
+           MovePlayer(); 
+        }
+        
 	}
     private void MovePlayer() {
         float xPos = Input.GetAxis("Horizontal");
@@ -105,6 +119,7 @@ public class Player : MonoBehaviour {
     }
     private void Jumping() {
         if (Input.GetKeyDown(KeyCode.W) && !Input.GetKeyDown(KeyCode.J)) {
+            
             status = StatusPlayer.Jumping;
             playerAnimator.SetBool("Jumping", true);
             //playerAnimator.SetBool("Running", false);
@@ -130,10 +145,14 @@ public class Player : MonoBehaviour {
     }
     private void Attack() {
         if(IsInGround()){
-          if (Input.GetKey(KeyCode.J) && playerAnimator.GetBool("IdleSword") == true && playerAnimator.GetBool("jumping") == false) {
+          if (Input.GetKey(KeyCode.J) && playerAnimator.GetBool("IdleSword") == true) {
                 //rb2D.velocity = new Vector2(transform.position.x, transform.position.y);
                 areaAttack.GetComponent<CircleCollider2D>().enabled = true;
-                playerAnimator.SetBool("AttackGr1", true);
+                if(playerAnimator.GetBool("AttackGr1") == false){
+                    swordAttackVoid.Play();
+                    playerAnimator.SetBool("AttackGr1", true);
+                }
+                //playerAnimator.SetBool("AttackGr1", false);
             }else{
                 areaAttack.GetComponent<CircleCollider2D>().enabled = false;
                 playerAnimator.SetBool("AttackGr1", false);
@@ -160,9 +179,11 @@ public class Player : MonoBehaviour {
             if (playerAnimator.GetBool("IdleSword") == false) {
                 playerAnimator.SetBool("DrawingSword", true);
                 playerAnimator.SetBool("IdleSword", true);
+                swordDraw.Play();
             } else {
                 playerAnimator.SetBool("IdleSword", false);
                 playerAnimator.SetBool("DrawingSword", false);
+                swordSheat.Play();
             }
         }
     }
@@ -186,6 +207,7 @@ public class Player : MonoBehaviour {
 
         if (collision.gameObject.name == "Coin10") {
             IncreasePuntuation(collision.gameObject.GetComponent<Coin>().TakeValue());
+            coin10.Play();
             Destroy(collision.gameObject);
         }
         if (collision.gameObject.name == "Heart") {
@@ -198,6 +220,7 @@ public class Player : MonoBehaviour {
     }
     public void TakeDamage(int damage) {
         status = StatusPlayer.Enjuring;
+        pain.Play();
         health -= damage;
         if(health <= 0){
             health = 0;
@@ -207,6 +230,10 @@ public class Player : MonoBehaviour {
         bool isAlive = false;
         if (health == 0) {
             isAlive = true;
+            playerAnimator.SetBool("Dying", true);
+            if (this.playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("PlayerDie")) {
+                playerAnimator.SetBool("Dying", false);
+            }
             print("MUERTO!!!");
         }
         return isAlive;
@@ -223,6 +250,9 @@ public class Player : MonoBehaviour {
     }
     public int GetHealth() {
         return health;
+    }
+    public void SwordHitSound(){
+        swordAttackHit.Play();
     }
     //private bool IsInGround() {
     //    bool inGround = false;

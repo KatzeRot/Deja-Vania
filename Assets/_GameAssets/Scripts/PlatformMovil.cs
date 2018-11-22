@@ -30,4 +30,13 @@ public class PlatformMovil : MonoBehaviour {
             }
         }
     }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        collision.gameObject.transform.parent = null;
+        if(collision.gameObject.gameObject.tag == "Player"){
+            collision.gameObject.transform.parent = this.gameObject.transform;
+        }else{
+            
+        }
+    }
 }

@@ -21,7 +21,6 @@ public class AreaAttack : MonoBehaviour {
 	{
 		if(other.gameObject.tag == "HellHound") {
             other.GetComponent<HellHound>().TakeDamage();
-        }
-
+		}
 	}
 }
